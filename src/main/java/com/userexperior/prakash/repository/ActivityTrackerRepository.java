@@ -1,7 +1,7 @@
 
 package com.userexperior.prakash.repository;
 
-import com.userexperior.prakash.entity.ActivityTracker;
+import com.userexperior.prakash.pojo.entity.ActivityTracker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

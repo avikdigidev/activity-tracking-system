@@ -1,6 +1,5 @@
-package com.userexperior.prakash.entity;
+package com.userexperior.prakash.pojo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,7 +10,6 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Table(name = "activity_tracker")
 public class ActivityTracker {
 
@@ -27,7 +25,7 @@ public class ActivityTracker {
     private Long startTime;
 
     @Column(name = "activity_duration",nullable = false)
-    private Long activityDuration;
+    private int activityDuration;
 
     @Column(name = "date")
     private Date date;

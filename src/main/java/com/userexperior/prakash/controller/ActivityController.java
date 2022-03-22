@@ -1,6 +1,6 @@
 package com.userexperior.prakash.controller;
 
-import com.userexperior.prakash.dto.response.ActivityReport;
+import com.userexperior.prakash.pojo.dto.response.ActivityReport;
 import com.userexperior.prakash.exception.InternalServerErrorException;
 import com.userexperior.prakash.exception.ResourceNotFoundException;
 import com.userexperior.prakash.service.ActivityTrackerService;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 
 @RestController
-@RequestMapping("/api/report")
 public class ActivityController {
     private static final Logger logger = LoggerFactory.getLogger(ActivityController.class);
 
@@ -20,7 +19,7 @@ public class ActivityController {
     private ActivityTrackerService activityTrackerService;
 
 
-    @GetMapping("/readings")
+    @GetMapping("/report")
     public ActivityReport getActivityReport()  {
 
         ActivityReport activityReport = null;

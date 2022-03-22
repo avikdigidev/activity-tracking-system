@@ -1,4 +1,4 @@
-package com.userexperior.prakash.dto.response;
+package com.userexperior.prakash.pojo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -9,9 +9,10 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @ToString
-public class MonthlyActivity {
+public class MonthlyActivity implements Serializable {
+    private static final long serialVersionUID = 1905182041950251207L;
     @JsonProperty("activity_name")
-    private Enum activityName;
+    private String activityName;
     @JsonProperty("occurrences")
     private Long activityOccurrence;
 }
