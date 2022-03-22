@@ -1,2 +1,9 @@
-# activity-tracking-system
-Springboot app to track few web activities
+CREATE SCHEMA `userexperior` ;
+
+CREATE TABLE `userexperior`.`activity_tracker` (
+`id` BIGINT NOT NULL,
+`activity_name` VARCHAR(10) NOT NULL,
+`start_time` BIGINT NOT NULL,
+`activity_duration` INT NOT NULL,
+`date` date DEFAULT NULL,
+PRIMARY KEY (`id`));
