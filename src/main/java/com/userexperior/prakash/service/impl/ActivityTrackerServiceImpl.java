@@ -42,31 +42,19 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         List<ActivityTrackerDTO> activityTrackerDTOList = readJSONFiles();
         saveValidDataToDB(activityTrackerDTOList);
         activityTrackerDTOList = null; //no use of this list so explicitly setting it to null for GC
-        List<MonthlyActivity> ls = getMonthlyStats();
-        System.out.println(ls);
-        activityReport.setMonthlyActivity(ls);
+        activityReport.setMonthlyActivity(getMonthlyStats());
 
         return activityReport;
     }
 
     private List<MonthlyActivity> getMonthlyStats() {
-        List<MonthlyActivity> monthlyActivityStats = new ArrayList<>();
         Date today = new Date(System.currentTimeMillis());
         Calendar cal = new GregorianCalendar();
         cal.setTime(today);
         cal.add(Calendar.DAY_OF_MONTH, -30);
         Date lastMonthDate = new Date(cal.getTime().getTime());
-        List<ActivityTracker> list = activityTrackerRepository.getActivityStats(today.toString(), lastMonthDate.toString());
-        List<ActivityTracker> list2 = activityTrackerRepository.getActivityStatsByActivityDate(today, lastMonthDate);
-        System.out.println("*****************************************");
-        System.out.println(list);
-        System.out.println(list2);
-        System.out.println("*****************************************");
-        int countA = 0, countB = 0, countC = 0, countD = 0;
-        for (ActivityTracker activityTracker : list) {
-            MonthlyActivity monthlyActivity = new MonthlyActivity();
-            monthlyActivityStats.add(monthlyActivity);
-        }
+        List<MonthlyActivity> monthlyActivityStats = activityTrackerRepository.getActivityStatsByActivityDate(today, lastMonthDate);
+
         return monthlyActivityStats;
     }
 
