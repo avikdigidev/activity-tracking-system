@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class MonthlyActivity implements Serializable {
     private static final long serialVersionUID = 1905182041950251207L;
@@ -15,4 +15,9 @@ public class MonthlyActivity implements Serializable {
     private String activityName;
     @JsonProperty("occurrences")
     private Long activityOccurrence;
+
+    public MonthlyActivity(String activityName, Long activityOccurrence) {
+        this.activityName = activityName;
+        this.activityOccurrence = activityOccurrence;
+    }
 }

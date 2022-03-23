@@ -14,12 +14,13 @@ import java.util.List;
 public class ActivityTrackerDTO implements Serializable {
     @JsonFormat(shape = JsonFormat.Shape.ANY)
     @JsonProperty("unique_id")
-    private Long uniqueId;
+    /*name explicitly kept just like mentioned in JSON, else GSON was unable to read the values*/
+    private Long unique_id;
     @JsonProperty("activities")
     private List<Activity> activities;
 
-    public void setUnique_id(String uniqueId) {
-        this.uniqueId = Long.getLong(uniqueId);
+    public void setUniqueId(String unique_id) {
+        this.unique_id = Long.getLong(unique_id);
     }
 
     public void setActivities(List<Activity> activities) {
