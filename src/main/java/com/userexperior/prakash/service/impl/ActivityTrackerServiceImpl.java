@@ -7,6 +7,7 @@ import com.userexperior.prakash.pojo.dto.request.Activity;
 import com.userexperior.prakash.pojo.dto.request.ActivityTrackerDTO;
 import com.userexperior.prakash.pojo.dto.response.ActivityReport;
 import com.userexperior.prakash.pojo.dto.response.MonthlyActivity;
+import com.userexperior.prakash.pojo.dto.response.TwoDayActivity;
 import com.userexperior.prakash.pojo.entity.ActivityTracker;
 import com.userexperior.prakash.repository.ActivityTrackerRepository;
 import com.userexperior.prakash.service.ActivityTrackerService;
@@ -43,8 +44,14 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         saveValidDataToDB(activityTrackerDTOList);
         activityTrackerDTOList = null; //no use of this list so explicitly setting it to null for GC
         activityReport.setMonthlyActivity(getMonthlyStats());
-
+        activityReport.setTwoDayActivity(getTodayVsYesterdayStats());
         return activityReport;
+    }
+
+    private List<TwoDayActivity> getTodayVsYesterdayStats() {
+        //select activity_date,activity_name, COUNT(*) from activity_tracker group by 1, 2;
+
+        return null;
     }
 
     private List<MonthlyActivity> getMonthlyStats() {
