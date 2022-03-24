@@ -1,6 +1,6 @@
-CREATE SCHEMA `userexperior` ;
+CREATE SCHEMA `ue` ;
 
-CREATE TABLE `userexperior`.`activity_tracker` (
+CREATE TABLE `ue`.`activity_tracker` (
 `id` BIGINT NOT NULL AUTO_INCREMENT,
 `unique_id` BIGINT NOT NULL,
 `activity_name` VARCHAR(10) NOT NULL,
