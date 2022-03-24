@@ -3,6 +3,7 @@ package com.userexperior.prakash.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
+import com.userexperior.prakash.pojo.dto.TwoDayActivityDb;
 import com.userexperior.prakash.pojo.dto.request.Activity;
 import com.userexperior.prakash.pojo.dto.request.ActivityTrackerDTO;
 import com.userexperior.prakash.pojo.dto.response.ActivityReport;
@@ -38,31 +39,95 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
     private String[] activityNames = {ActivityTrackerConstants.DOUBLE_TAP, ActivityTrackerConstants.SINGLE_TAP, ActivityTrackerConstants.CRASH, ActivityTrackerConstants.ANR};
 
     @Override
-    public ActivityReport getActivityReport() throws IOException {
+    public ActivityReport getActivityReport() throws Exception {
         ActivityReport activityReport = new ActivityReport();
         List<ActivityTrackerDTO> activityTrackerDTOList = readJSONFiles();
         saveValidDataToDB(activityTrackerDTOList);
         activityTrackerDTOList = null; //no use of this list so explicitly setting it to null for GC
         activityReport.setMonthlyActivity(getMonthlyStats());
-        activityReport.setTwoDayActivity(getTodayVsYesterdayStats());
+        List<TwoDayActivity> as = getTodayVsYesterdayStats();
+        activityReport.setTwoDayActivity(as);
         return activityReport;
     }
 
     private List<TwoDayActivity> getTodayVsYesterdayStats() {
-        //select activity_date,activity_name, COUNT(*) from activity_tracker group by 1, 2;
+        Date today = new Date(System.currentTimeMillis());
+        int numDays = -1;
+        Date yesterday = getDateFromToday(today, numDays);
 
-        return null;
+        List<TwoDayActivity> twoDayActivityList = new ArrayList<>();
+        TwoDayActivity doubleTapActivity = new TwoDayActivity();
+        doubleTapActivity.setName(activityNames[0]);
+        TwoDayActivity singleTapActivity = new TwoDayActivity();
+        singleTapActivity.setName(activityNames[1]);
+        TwoDayActivity crashActivity = new TwoDayActivity();
+        crashActivity.setName(activityNames[2]);
+        TwoDayActivity anrActivity = new TwoDayActivity();
+        anrActivity.setName(activityNames[3]);
+
+        List<TwoDayActivityDb> yesterdayActivityList = activityTrackerRepository.getActivityStatsByActivityNameAndDate(yesterday);
+        List<TwoDayActivityDb> todayActivityList = activityTrackerRepository.getActivityStatsByActivityNameAndDate(today);
+        for (TwoDayActivityDb yesterdayActivity : yesterdayActivityList) {
+            if (Objects.equals(yesterdayActivity.getActivityName(), doubleTapActivity.getName())) {
+                doubleTapActivity.setYesterdayOccurrence(yesterdayActivity.getOccurrences());
+            } else if (Objects.equals(yesterdayActivity.getActivityName(), singleTapActivity.getName())) {
+                singleTapActivity.setYesterdayOccurrence(yesterdayActivity.getOccurrences());
+            } else if (Objects.equals(yesterdayActivity.getActivityName(), crashActivity.getName())) {
+                crashActivity.setYesterdayOccurrence(yesterdayActivity.getOccurrences());
+            } else if (Objects.equals(yesterdayActivity.getActivityName(), anrActivity.getName())) {
+                anrActivity.setYesterdayOccurrence(yesterdayActivity.getOccurrences());
+            }
+        }
+        for (TwoDayActivityDb todayActivity : todayActivityList) {
+            if (Objects.equals(todayActivity.getActivityName(), doubleTapActivity.getName())) {
+                doubleTapActivity.setYesterdayOccurrence((todayActivity.getOccurrences() == null) ? 0 : todayActivity.getOccurrences());
+            } else if (Objects.equals(todayActivity.getActivityName(), singleTapActivity.getName())) {
+                singleTapActivity.setYesterdayOccurrence((todayActivity.getOccurrences() == null) ? 0 : todayActivity.getOccurrences());
+            } else if (Objects.equals(todayActivity.getActivityName(), crashActivity.getName())) {
+                crashActivity.setYesterdayOccurrence((todayActivity.getOccurrences() == null) ? 0 : todayActivity.getOccurrences());
+            } else if (Objects.equals(todayActivity.getActivityName(), anrActivity.getName())) {
+                anrActivity.setYesterdayOccurrence((todayActivity.getOccurrences() == null) ? 0 : todayActivity.getOccurrences());
+            }
+        }
+        setActivityStatus(doubleTapActivity);
+        setActivityStatus(singleTapActivity);
+        setActivityStatus(crashActivity);
+        setActivityStatus(anrActivity);
+        twoDayActivityList.add(doubleTapActivity);
+        twoDayActivityList.add(singleTapActivity);
+        twoDayActivityList.add(crashActivity);
+        twoDayActivityList.add(anrActivity);
+        return twoDayActivityList;
+    }
+
+    private void setActivityStatus(TwoDayActivity activity) {
+        long y = activity.getYesterdayOccurrence();
+        long x = activity.getTodayOccurrence();
+        if (x > y) {
+            activity.setStatus(ActivityTrackerConstants.POSITIVE);
+        } else if (x < y) {
+            activity.setStatus(ActivityTrackerConstants.NEGATIVE);
+        } else {
+            activity.setStatus(ActivityTrackerConstants.UNALTERED);
+        }
+
     }
 
     private List<MonthlyActivity> getMonthlyStats() {
         Date today = new Date(System.currentTimeMillis());
-        Calendar cal = new GregorianCalendar();
-        cal.setTime(today);
-        cal.add(Calendar.DAY_OF_MONTH, -30);
-        Date lastMonthDate = new Date(cal.getTime().getTime());
+        int numDays = -30;
+        Date lastMonthDate = getDateFromToday(today, numDays);
         List<MonthlyActivity> monthlyActivityStats = activityTrackerRepository.getActivityStatsByActivityDate(today, lastMonthDate);
 
         return monthlyActivityStats;
+    }
+
+    private Date getDateFromToday(Date today, int numDays) {
+        Calendar cal = new GregorianCalendar();
+        cal.setTime(today);
+        cal.add(Calendar.DAY_OF_MONTH, numDays);
+        return new Date(cal.getTime().getTime());
+
     }
 
     private void saveValidDataToDB(List<ActivityTrackerDTO> activityTrackerDTOList) {

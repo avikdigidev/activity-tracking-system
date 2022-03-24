@@ -26,7 +26,7 @@ public class ActivityController {
         ActivityReport activityReport = null;
         try {
             activityReport = activityTrackerService.getActivityReport();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

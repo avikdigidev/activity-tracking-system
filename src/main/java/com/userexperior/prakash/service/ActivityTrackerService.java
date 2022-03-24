@@ -7,5 +7,5 @@ import java.io.IOException;
 
 @Service
 public interface ActivityTrackerService {
-    ActivityReport getActivityReport() throws IOException;
+    ActivityReport getActivityReport() throws IOException, Exception;
 }
