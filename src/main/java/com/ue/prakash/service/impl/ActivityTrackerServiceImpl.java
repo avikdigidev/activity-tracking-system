@@ -3,10 +3,12 @@ package com.ue.prakash.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
+import com.ue.prakash.exception.NoDataFoundException;
+import com.ue.prakash.exception.response.ResponseMessages;
 import com.ue.prakash.pojo.dto.TwoDayActivityDb;
 import com.ue.prakash.pojo.dto.request.Activity;
 import com.ue.prakash.pojo.dto.request.ActivityTrackerJSONDTO;
-import com.ue.prakash.pojo.dto.response.ActivityReport;
+import com.ue.prakash.pojo.dto.response.ActivityReportResponse;
 import com.ue.prakash.pojo.dto.response.MonthlyActivity;
 import com.ue.prakash.pojo.dto.response.TwoDayActivity;
 import com.ue.prakash.pojo.entity.ActivityTracker;
@@ -18,13 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,17 +38,17 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
     private final String[] activityNames = {ActivityTrackerConstants.DOUBLE_TAP, ActivityTrackerConstants.SINGLE_TAP, ActivityTrackerConstants.CRASH, ActivityTrackerConstants.ANR};
 
     @Override
-    public ActivityReport getActivityReport() throws Exception {
-        ActivityReport activityReport = new ActivityReport();
+    public ActivityReportResponse getActivityReport() throws Exception {
+        ActivityReportResponse activityReportResponse = new ActivityReportResponse();
         List<ActivityTrackerJSONDTO> activityTrackerJSONDTOList = readJSONFiles();
         saveValidDataToDB(activityTrackerJSONDTOList);
-        activityReport.setMonthlyActivity(getMonthlyStats());
+        activityReportResponse.setMonthlyActivity(getMonthlyStats());
         List<TwoDayActivity> as = getTodayVsYesterdayStats();
-        activityReport.setTwoDayActivity(as);
-        return activityReport;
+        activityReportResponse.setTwoDayActivity(as);
+        return activityReportResponse;
     }
 
-    private List<TwoDayActivity> getTodayVsYesterdayStats() {
+    public List<TwoDayActivity> getTodayVsYesterdayStats() {
         Date today = new Date(System.currentTimeMillis());
         int numDays = -1;
         Date yesterday = getDateFromToday(today, numDays);
@@ -84,7 +82,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         return twoDayActivityList;
     }
 
-    private void setTodayOccurrences(TwoDayActivity doubleTapActivity, TwoDayActivity singleTapActivity, TwoDayActivity crashActivity, TwoDayActivity anrActivity, TwoDayActivityDb todayActivity) {
+    public void setTodayOccurrences(TwoDayActivity doubleTapActivity, TwoDayActivity singleTapActivity, TwoDayActivity crashActivity, TwoDayActivity anrActivity, TwoDayActivityDb todayActivity) {
         if (Objects.equals(todayActivity.getActivityName(), doubleTapActivity.getName())) {
             doubleTapActivity.setYesterdayOccurrence((todayActivity.getOccurrences() == null) ? 0 : todayActivity.getOccurrences());
         } else if (Objects.equals(todayActivity.getActivityName(), singleTapActivity.getName())) {
@@ -96,7 +94,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         }
     }
 
-    private void setYesterdayOccurrences(TwoDayActivity doubleTapActivity, TwoDayActivity singleTapActivity, TwoDayActivity crashActivity, TwoDayActivity anrActivity, TwoDayActivityDb yesterdayActivity) {
+    public void setYesterdayOccurrences(TwoDayActivity doubleTapActivity, TwoDayActivity singleTapActivity, TwoDayActivity crashActivity, TwoDayActivity anrActivity, TwoDayActivityDb yesterdayActivity) {
         if (Objects.equals(yesterdayActivity.getActivityName(), doubleTapActivity.getName())) {
             doubleTapActivity.setYesterdayOccurrence(yesterdayActivity.getOccurrences());
         } else if (Objects.equals(yesterdayActivity.getActivityName(), singleTapActivity.getName())) {
@@ -108,7 +106,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         }
     }
 
-    private void setActivityStatus(TwoDayActivity activity) {
+    public void setActivityStatus(TwoDayActivity activity) {
         long y = activity.getYesterdayOccurrence();
         long x = activity.getTodayOccurrence();
         if (x > y) {
@@ -121,7 +119,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
 
     }
 
-    private List<MonthlyActivity> getMonthlyStats() {
+    public List<MonthlyActivity> getMonthlyStats() {
         Date today = new Date(System.currentTimeMillis());
         int numDays = -30;
         Date lastMonthDate = getDateFromToday(today, numDays);
@@ -129,7 +127,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         return activityTrackerRepository.getActivityStatsByActivityDate(today, lastMonthDate);
     }
 
-    private Date getDateFromToday(Date today, int numDays) {
+    public Date getDateFromToday(Date today, int numDays) {
         Calendar cal = new GregorianCalendar();
         cal.setTime(today);
         cal.add(Calendar.DAY_OF_MONTH, numDays);
@@ -137,7 +135,7 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
 
     }
 
-    private void saveValidDataToDB(List<ActivityTrackerJSONDTO> activityTrackerJSONDTOList) {
+    public void saveValidDataToDB(List<ActivityTrackerJSONDTO> activityTrackerJSONDTOList) {
         List<ActivityTracker> activityTrackers = new ArrayList<>();
         for (ActivityTrackerJSONDTO activityDto : activityTrackerJSONDTOList) {
             for (Activity activity : activityDto.getActivities()) {
@@ -153,33 +151,28 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         activityTrackerRepository.saveAll(activityTrackers);
     }
 
-    private List<ActivityTrackerJSONDTO> readJSONFiles() {
+    public List<ActivityTrackerJSONDTO> readJSONFiles() throws NoDataFoundException {
         List<ActivityTrackerJSONDTO> activityTrackerJSONDTOList = new ArrayList<>();
         Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
         Path folder = Paths.get(filePath);
-        try ( DirectoryStream<Path> stream = Files.newDirectoryStream(folder)){
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder)) {
 
             for (Path entry : stream) {
                 String file = folder + "\\" + entry.getFileName().toString();
                 ActivityTrackerJSONDTO activityDto = null;
-
                 activityDto = gson.fromJson(new FileReader(ResourceUtils.getFile(file)), ActivityTrackerJSONDTO.class);
-
                 removeInvalidActivities(activityDto);
                 activityTrackerJSONDTOList.add(activityDto);
             }
-        } catch (FileNotFoundException e) {
-            //TODO add custom execption instead
-            e.printStackTrace();
         } catch (IOException e) {
-            //TODO add custom execption instead
-            e.printStackTrace();
+            throw new NoDataFoundException(ResponseMessages.NOT_FOUND.getCustomErrorMessage());
+
         }
 
         return activityTrackerJSONDTOList;
     }
 
-    private void removeInvalidActivities(ActivityTrackerJSONDTO activityDto) {
+    public void removeInvalidActivities(ActivityTrackerJSONDTO activityDto) {
         List<Activity> activities = activityDto.getActivities();
         activities = activities.stream().filter(activity -> Arrays.asList(activityNames).contains(activity.getName())).collect(Collectors.toList());
         activityDto.setActivities(activities);

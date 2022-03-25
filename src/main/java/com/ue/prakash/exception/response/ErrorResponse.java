@@ -10,13 +10,11 @@ public class ErrorResponse {
 	private HttpStatus status;
 	private String message;
 	private Instant timestamp;
-	private String errorStack;
 
-	public ErrorResponse(HttpStatus status, String message, Instant timestamp, String errorStack) {
+	public ErrorResponse(HttpStatus status, String message, Instant timestamp) {
 		this.status = status;
 		this.message = message;
 		this.timestamp = timestamp;
-		this.errorStack = errorStack;
 	}
 
 }

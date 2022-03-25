@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityReport implements Serializable {
+public class ActivityReportResponse implements Serializable {
     private static final long serialVersionUID = 1905122041950251207L;
 
     @JsonProperty("activity_statistics_for_month")

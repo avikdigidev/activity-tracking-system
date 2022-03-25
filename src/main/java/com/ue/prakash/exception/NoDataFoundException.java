@@ -1,11 +1,12 @@
 package com.ue.prakash.exception;
 
-public class ReportServiceException extends Exception {
+public class NoDataFoundException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public ReportServiceException(String message) {
+	public NoDataFoundException(String message) {
 		super(message);
 
 	}
+
 }

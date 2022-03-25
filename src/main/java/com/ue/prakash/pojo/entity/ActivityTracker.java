@@ -1,5 +1,6 @@
 package com.ue.prakash.pojo.entity;
 
+import com.ue.prakash.utils.ActivityTrackerConstants;
 import lombok.*;
 
 import javax.persistence.*;
@@ -10,9 +11,10 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "activity_tracker")
+@Table(name = ActivityTrackerConstants.ACTIVITY_TRACKER_TABLE)
 @ToString
 public class ActivityTracker {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
