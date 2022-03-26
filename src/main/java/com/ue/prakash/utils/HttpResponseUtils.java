@@ -19,23 +19,9 @@ public class HttpResponseUtils {
 	}
 
 	public static <T> ResponseEntity<T> getResponse(HttpStatus status, String message, T object) {
-		return new ResponseEntity<T>(object, getMap(message), status);
+		return new ResponseEntity<>(object, getMap(message), status);
 
 	}
 
-	public static <T> ResponseEntity<T> getResponse(T object) {
-		return new ResponseEntity<T>(HttpStatus.OK);
-
-	}
-
-	public static <T> ResponseEntity<T> getErrorResponse(HttpStatus status, String message) {
-		return new ResponseEntity<T>(getMap(message), status);
-
-	}
-
-	public static <T> ResponseEntity<T> getBadRequestErrorResponse(HttpStatus status, String message) {
-		return getErrorResponse(HttpStatus.BAD_REQUEST, "Invalid request");
-
-	}
 
 }

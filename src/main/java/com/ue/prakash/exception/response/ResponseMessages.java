@@ -22,7 +22,7 @@ public enum ResponseMessages {
 		return errorMessage;
 	}
 
-	private HttpStatus errorCode;
-	private String errorMessage;
+	private final HttpStatus errorCode;
+	private final String errorMessage;
 
 }

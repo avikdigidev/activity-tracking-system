@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 
 @RestController
 public class ActivityController {
@@ -26,13 +25,20 @@ public class ActivityController {
 
 
     @GetMapping(value = "${report.url}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity getActivityReport() throws NoDataFoundException {
+    public ResponseEntity<ActivityReportResponse> getActivityReport() throws NoDataFoundException {
 
         ActivityReportResponse activityReportResponse = null;
         try {
             activityReportResponse = activityTrackerService.getActivityReport();
         } catch (NoDataFoundException e) {
-            logger.error(Arrays.asList(e.getStackTrace()).toString());
+            /*
+            In applications where the accepted practice is to log an Exception and then rethrow it,
+            you end up with miles-long logs that contain multiple instances of the same exception.
+            In multithreaded applications debugging this type of log can be particularly hellish
+            because messages from other threads will be interwoven with the repetitions of the logged-and-thrown Exception.
+            Instead, exceptions should be either logged or rethrown, not both.
+            */
+            //logger.error(Arrays.asList(e.getStackTrace()).toString());
             throw new NoDataFoundException(e.getMessage());
         }catch (Exception e) {
             throw new ActivityTrackerException(e.getMessage(),ActivityTrackerConstants.ACTIVITY_TRACKER_ERROR_CODE, ActivityTrackerConstants.ACTIVITY_TRACKER_ERROR_MESSAGE);

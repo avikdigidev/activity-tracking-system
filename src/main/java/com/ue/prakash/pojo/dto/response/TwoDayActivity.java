@@ -10,6 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class TwoDayActivity implements Serializable {
     private static final long serialVersionUID = 1905982041950251207L;
     @JsonProperty("activity_name")
