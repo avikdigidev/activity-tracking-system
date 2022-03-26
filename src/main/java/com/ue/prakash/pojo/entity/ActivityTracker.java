@@ -10,7 +10,6 @@ import java.sql.Date;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = ActivityTrackerConstants.ACTIVITY_TRACKER_TABLE)
 @ToString
 public class ActivityTracker {

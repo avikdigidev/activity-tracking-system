@@ -7,7 +7,6 @@ import java.io.Serializable;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class Activity implements Serializable {
     private static final long serialVersionUID = 1905182041950851207L;

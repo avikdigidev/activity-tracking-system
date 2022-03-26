@@ -1,0 +1,55 @@
+{
+  "unique_id": 1647060254472,
+  "activities": [
+    {
+      "name": "doubleTap",
+      "time": 1647350708743,
+      "duration": 53
+    },
+    {
+      "name": "doubleTap",
+      "time": 1647320666498,
+      "duration": 40
+    },
+    {
+      "name": "singleTap",
+      "time": 1629575348258,
+      "duration": 2
+    },
+    {
+      "name": "crash",
+      "time": 1647023643939,
+      "duration": 53
+    },
+    {
+      "name": "doubleTap",
+      "time": 1631313307696,
+      "duration": 40
+    },
+    {
+      "name": "anr",
+      "time": 1647691754404,
+      "duration": 2
+    },
+    {
+      "name": "crash",
+      "time": 1647753331620,
+      "duration": 53
+    },
+    {
+      "name": "doubleTap",
+      "time": 1647440711184,
+      "duration": 40
+    },
+    {
+      "name": "anr",
+      "time": 1646481269922,
+      "duration": 2
+    }
+  ]
+}
+
+
+
+
+

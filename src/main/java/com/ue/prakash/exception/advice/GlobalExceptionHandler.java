@@ -27,12 +27,12 @@ public class GlobalExceptionHandler {
 
 	}
 
-	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseStatus(code = HttpStatus.CONFLICT)
 	@ExceptionHandler(value = { ActivityTrackerException.class })
 	public ResponseEntity<Object> handleException(ActivityTrackerException e) {
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), Instant.now());
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT, e.getMessage(), Instant.now());
 		log.error(Arrays.asList(e.getStackTrace()).toString());
-		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 
 	}
 

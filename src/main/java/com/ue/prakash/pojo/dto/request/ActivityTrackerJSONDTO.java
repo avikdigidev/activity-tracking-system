@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class ActivityTrackerJSONDTO implements Serializable {
-    @JsonFormat(shape = JsonFormat.Shape.ANY)
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @JsonProperty("unique_id")
     /*name explicitly kept just like mentioned in JSON, else GSON was unable to read the values*/
     private Long unique_id;

@@ -2,7 +2,9 @@ package com.ue.prakash.service.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.LongSerializationPolicy;
+import com.ue.prakash.exception.ActivityTrackerException;
 import com.ue.prakash.exception.NoDataFoundException;
 import com.ue.prakash.exception.response.ResponseMessages;
 import com.ue.prakash.pojo.dto.TwoDayActivityDb;
@@ -15,6 +17,8 @@ import com.ue.prakash.pojo.entity.ActivityTracker;
 import com.ue.prakash.repository.ActivityTrackerRepository;
 import com.ue.prakash.service.ActivityTrackerService;
 import com.ue.prakash.utils.ActivityTrackerConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ActivityTrackerServiceImpl implements ActivityTrackerService {
-
+    private static final Logger logger = LoggerFactory.getLogger(ActivityTrackerServiceImpl.class);
     @Autowired
     ActivityTrackerRepository activityTrackerRepository;
     @Value("${file.path}")
@@ -52,7 +57,8 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         Date today = new Date(System.currentTimeMillis());
         int numDays = -1;
         Date yesterday = getDateFromToday(today, numDays);
-
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] [{}] - [{}]", "ActivityTrackerServiceImpl",
+                "getTodayVsYesterdayStats", "Get Yesterday vs Today stats for the dates : ",today,yesterday);
         List<TwoDayActivity> twoDayActivityList = new ArrayList<>();
         //using builder pattern creating objects for all the possible activities with default values
         TwoDayActivity doubleTapActivity = TwoDayActivity.builder().name(activityNames[0]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
@@ -60,8 +66,11 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         TwoDayActivity crashActivity = TwoDayActivity.builder().name(activityNames[2]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
         TwoDayActivity anrActivity = TwoDayActivity.builder().name(activityNames[3]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
 
-
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] [{}]", "ActivityTrackerServiceImpl",
+                "getTodayVsYesterdayStats", "Fetching Yesterday stats for the date : ",yesterday);
         List<TwoDayActivityDb> yesterdayActivityList = activityTrackerRepository.getActivityStatsByActivityNameAndDate(yesterday);
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] [{}]", "ActivityTrackerServiceImpl",
+                "getTodayVsYesterdayStats", "Fetching Today stats for the date : ",today);
         List<TwoDayActivityDb> todayActivityList = activityTrackerRepository.getActivityStatsByActivityNameAndDate(today);
         for (TwoDayActivityDb yesterdayActivity : yesterdayActivityList) {
             setYesterdayOccurrences(doubleTapActivity, singleTapActivity, crashActivity, anrActivity, yesterdayActivity);
@@ -121,7 +130,8 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         Date today = new Date(System.currentTimeMillis());
         int numDays = -30;
         Date lastMonthDate = getDateFromToday(today, numDays);
-
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] [{}] - [{}]", "ActivityTrackerServiceImpl",
+                "getMonthlyStats", "Get monthly stats for the date range : ",today,lastMonthDate);
         return activityTrackerRepository.getActivityStatsByActivityDate(today, lastMonthDate);
     }
 
@@ -146,6 +156,8 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
                 activityTrackers.add(activityTracker);
             }
         }
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}]", "ActivityTrackerServiceImpl",
+                "saveValidDataToDB", "Successfully saved valid records to DB");
         activityTrackerRepository.saveAll(activityTrackers);
     }
 
@@ -153,19 +165,24 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         List<ActivityTrackerJSONDTO> activityTrackerJSONDTOList = new ArrayList<>();
         Gson gson = new GsonBuilder().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
         Path folder = Paths.get(filePath);
+        logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] > [{}]", "ActivityTrackerServiceImpl",
+                "readJSONFiles", "Reading files from folder-- ",folder.toString());
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder)) {
-
             for (Path entry : stream) {
                 String file = folder + "\\" + entry.getFileName().toString();
                 ActivityTrackerJSONDTO activityDto = gson.fromJson(new FileReader(ResourceUtils.getFile(file)), ActivityTrackerJSONDTO.class);
                 removeInvalidActivities(activityDto);
+                logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] > [{}]", "ActivityTrackerServiceImpl",
+                        "readJSONFiles", "File processed and added to list-- ",file);
                 activityTrackerJSONDTOList.add(activityDto);
             }
-        } catch (IOException e) {
+        }  catch (JsonSyntaxException e) {
+            throw new ActivityTrackerException(ResponseMessages.CONFLICT.getCustomErrorMessage());
+
+        }catch (IOException e) {
             throw new NoDataFoundException(ResponseMessages.NOT_FOUND.getCustomErrorMessage());
 
         }
-
         return activityTrackerJSONDTOList;
     }
 

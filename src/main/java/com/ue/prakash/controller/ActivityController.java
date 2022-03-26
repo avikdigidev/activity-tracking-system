@@ -5,7 +5,6 @@ import com.ue.prakash.exception.NoDataFoundException;
 import com.ue.prakash.exception.response.ResponseMessages;
 import com.ue.prakash.pojo.dto.response.ActivityReportResponse;
 import com.ue.prakash.service.ActivityTrackerService;
-import com.ue.prakash.utils.ActivityTrackerConstants;
 import com.ue.prakash.utils.HttpResponseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 
 @RestController
@@ -26,8 +27,10 @@ public class ActivityController {
 
     @GetMapping(value = "${report.url}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ActivityReportResponse> getActivityReport() throws NoDataFoundException {
-
-        ActivityReportResponse activityReportResponse = null;
+        LocalDateTime start = LocalDateTime.now();
+        logger.info("Inside class-name:[{}] method-name:[{}] type:[{}] msg:[{}] at: [{}]", "ActivityController",
+                "getActivityReport", "GET", "Request started at: ",start);
+        ActivityReportResponse activityReportResponse;
         try {
             activityReportResponse = activityTrackerService.getActivityReport();
         } catch (NoDataFoundException e) {
@@ -41,12 +44,12 @@ public class ActivityController {
             //logger.error(Arrays.asList(e.getStackTrace()).toString());
             throw new NoDataFoundException(e.getMessage());
         }catch (Exception e) {
-            throw new ActivityTrackerException(e.getMessage(),ActivityTrackerConstants.ACTIVITY_TRACKER_ERROR_CODE, ActivityTrackerConstants.ACTIVITY_TRACKER_ERROR_MESSAGE);
+            throw new ActivityTrackerException(e.getMessage());
         }
 
-
-        logger.info("Inside class-name:[{}] method-name:[{}] type:[{}] msg:[{}]", "ActivityController",
-                "getActivityReport", "GET", "Request served");
+        start = LocalDateTime.now();
+        logger.info("Inside class-name:[{}] method-name:[{}] type:[{}] msg:[{}] at: [{}]", "ActivityController",
+                "getActivityReport", "GET", "Request served at: ",start);
         return HttpResponseUtils.getResponse(HttpStatus.OK, ResponseMessages.OK.getCustomErrorMessage(),
                 activityReportResponse);
     }

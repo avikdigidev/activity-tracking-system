@@ -3,7 +3,7 @@ package com.ue.prakash.exception.response;
 import org.springframework.http.HttpStatus;
 
 public enum ResponseMessages {
-
+CONFLICT(HttpStatus.CONFLICT, "Exception occurred while reading JSON"),
 	NOT_FOUND(HttpStatus.NOT_FOUND, "Expected Input JSONs not found"),
 	OK(HttpStatus.OK, "Request Processed Successfully");
 

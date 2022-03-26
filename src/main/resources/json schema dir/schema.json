@@ -1,0 +1,18 @@
+{
+	/*
+   https://extendsclass.com/json-generator.html
+   */
+  "unique_id": random(1121123299127, 1321123299127),
+  "activities": 
+  	  repeat(1000, {
+			    "name": choice('doubleTap', 'singleTap', 'crash','anr','yxz','abc', 'doubletap', 'single','crsh'),
+				"time": random(1646073001000,1648751401000),
+				"duration": random(1, 100)
+      })
+  
+}
+
+
+
+
+
