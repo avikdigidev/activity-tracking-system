@@ -6,6 +6,8 @@ import com.ue.prakash.exception.response.ResponseMessages;
 import com.ue.prakash.pojo.dto.response.ActivityReportResponse;
 import com.ue.prakash.service.ActivityTrackerService;
 import com.ue.prakash.utils.HttpResponseUtils;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,8 @@ public class ActivityController {
     @Autowired
     private ActivityTrackerService activityTrackerService;
 
-
+    @ApiOperation(value = "Returns All Activity Tracker Stats", nickname = "getActivityReport")
+    @ApiResponse(response = ActivityReportResponse.class, code = 200, message = "Success")
     @GetMapping(value = "${report.url}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ActivityReportResponse> getActivityReport() throws NoDataFoundException {
         LocalDateTime start = LocalDateTime.now();
