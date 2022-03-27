@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 
 @RestController
@@ -28,12 +29,12 @@ public class ActivityController {
 
     @ApiOperation(value = "Returns All Activity Tracker Stats", nickname = "getActivityReport")
     @ApiResponse(response = ActivityReportResponse.class, code = 200, message = "Success")
-    @GetMapping(value = "${report.url}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ActivityReportResponse> getActivityReport() throws NoDataFoundException {
         LocalDateTime start = LocalDateTime.now();
         logger.info("Inside class-name:[{}] method-name:[{}] type:[{}] msg:[{}] at: [{}]", "ActivityController",
                 "getActivityReport", "GET", "Request started at: ",start);
-        ActivityReportResponse activityReportResponse;
+        ActivityReportResponse activityReportResponse = null;
         try {
             activityReportResponse = activityTrackerService.getActivityReport();
         } catch (NoDataFoundException e) {
@@ -44,10 +45,10 @@ public class ActivityController {
             because messages from other threads will be interwoven with the repetitions of the logged-and-thrown Exception.
             Instead, exceptions should be either logged or rethrown, not both.
             */
-            //logger.error(Arrays.asList(e.getStackTrace()).toString());
-            throw new NoDataFoundException(e.getMessage());
+            logger.error(Arrays.asList(e.getStackTrace()).toString());
+
         }catch (Exception e) {
-            throw new ActivityTrackerException(e.getMessage());
+            logger.error(Arrays.asList(e.getStackTrace()).toString());
         }
 
         start = LocalDateTime.now();

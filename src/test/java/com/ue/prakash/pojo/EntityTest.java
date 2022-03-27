@@ -9,28 +9,32 @@ import com.ue.prakash.pojo.dto.response.MonthlyActivity;
 import com.ue.prakash.pojo.dto.response.TwoDayActivity;
 import com.ue.prakash.pojo.entity.ActivityTracker;
 import com.ue.prakash.utils.PojoTestUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class EntityTest {
+public class EntityTest {
 
     private static final Logger logger = LoggerFactory.getLogger(EntityTest.class);
 
     AutoCloseable openMocks;
-    @BeforeEach
-     void setup() {
+
+    @Before
+    public void setup() {
         openMocks = MockitoAnnotations.openMocks(this);
     }
-    @AfterEach
-    void tearDown() throws Exception {
+
+    @After
+    public void tearDown() throws Exception {
         openMocks.close();
     }
+
     @Test
-    void testAccessorsShouldAccessProperField() {
+    public void testAccessorsShouldAccessProperField() {
         testEntityClass(Activity.class);
         testEntityClass(ActivityTrackerJSONDTO.class);
         testEntityClass(ActivityReportResponse.class);

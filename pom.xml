@@ -70,7 +70,21 @@
 			<artifactId>openpojo</artifactId>
 			<version>0.9.1</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+<!--22:55:28.311 [main] DEBUG org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider
+javax.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found.
+Add a provider like Hibernate Validator (RI) to your classpath.-->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.2.4.Final</version>
+		</dependency>
+    </dependencies>
+
 
 	<build>
 		<plugins>
