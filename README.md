@@ -1,6 +1,15 @@
-CREATE SCHEMA `ue` ;
+change the values in application properties:
+file.path #location of ActivitiesToProcess folder
+#admin credentials of MySQL
 
-CREATE TABLE `ue`.`activity_tracker` (
+spring.datasource.username
+spring.datasource.password
+
+# DDL
+
+CREATE SCHEMA `userexperior` ;
+
+CREATE TABLE `userexperior`.`activity_tracker` (
 `id` BIGINT NOT NULL AUTO_INCREMENT,
 `unique_id` BIGINT NOT NULL,
 `activity_name` VARCHAR(10) NOT NULL,
