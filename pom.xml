@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -75,6 +76,8 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+
 <!--22:55:28.311 [main] DEBUG org.springframework.validation.beanvalidation.OptionalValidatorFactoryBean - Failed to set up a Bean Validation provider
 javax.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Bean Validation provider could be found.
 Add a provider like Hibernate Validator (RI) to your classpath.-->
