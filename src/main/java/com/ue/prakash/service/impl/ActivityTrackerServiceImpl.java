@@ -39,8 +39,11 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
     ActivityTrackerRepository activityTrackerRepository;
     @Value("${file.path}")
     private String filePath;
+    @Value("${base.module.target.activities}")
+    private List<String> activityNames ;
+    @Value("${base.module.activities.status}")
+    private List<String> status;
 
-    private final String[] activityNames = {ActivityTrackerConstants.DOUBLE_TAP, ActivityTrackerConstants.SINGLE_TAP, ActivityTrackerConstants.CRASH, ActivityTrackerConstants.ANR};
 
     @Override
     public ActivityReportResponse getActivityReport() throws NoDataFoundException {
@@ -61,10 +64,12 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
                 "getTodayVsYesterdayStats", "Get Yesterday vs Today stats for the dates : ",today,yesterday);
         List<TwoDayActivity> twoDayActivityList = new ArrayList<>();
         //using builder pattern creating objects for all the possible activities with default values
-        TwoDayActivity doubleTapActivity = TwoDayActivity.builder().name(activityNames[0]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
-        TwoDayActivity singleTapActivity = TwoDayActivity.builder().name(activityNames[1]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
-        TwoDayActivity crashActivity = TwoDayActivity.builder().name(activityNames[2]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
-        TwoDayActivity anrActivity = TwoDayActivity.builder().name(activityNames[3]).yesterdayOccurrence(0L).todayOccurrence(0L).build();
+
+        TwoDayActivity anrActivity = TwoDayActivity.builder().name(activityNames.get(0)).yesterdayOccurrence(0L).todayOccurrence(0L).build();
+        TwoDayActivity crashActivity = TwoDayActivity.builder().name(activityNames.get(1)).yesterdayOccurrence(0L).todayOccurrence(0L).build();
+        TwoDayActivity doubleTapActivity = TwoDayActivity.builder().name(activityNames.get(2)).yesterdayOccurrence(0L).todayOccurrence(0L).build();
+        TwoDayActivity singleTapActivity = TwoDayActivity.builder().name(activityNames.get(3)).yesterdayOccurrence(0L).todayOccurrence(0L).build();
+
 
         logger.info("Inside class-name:[{}] method-name:[{}] msg:[{}] [{}]", "ActivityTrackerServiceImpl",
                 "getTodayVsYesterdayStats", "Fetching Yesterday stats for the date : ",yesterday);
@@ -117,11 +122,11 @@ public class ActivityTrackerServiceImpl implements ActivityTrackerService {
         long y = activity.getYesterdayOccurrence();
         long x = activity.getTodayOccurrence();
         if (x > y) {
-            activity.setStatus(ActivityTrackerConstants.POSITIVE);
+            activity.setStatus(status.get(0));
         } else if (x < y) {
-            activity.setStatus(ActivityTrackerConstants.NEGATIVE);
+            activity.setStatus(status.get(1));
         } else {
-            activity.setStatus(ActivityTrackerConstants.UNALTERED);
+            activity.setStatus(status.get(2));
         }
 
     }
